@@ -56,6 +56,8 @@ if __name__ =='__main__':
     sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, tensor_transfer_layer , tensor_top_conv=restore_graph(def_graph_path)
     cache=get_cache(sess, tensor_input_image , tensor_transfer_layer , img)
     reshape_cache=cache.reshape([32,64])
+    plt.imshow(img)
+    plt.show()
     plt.imshow(reshape_cache)
     plt.show()
     conv_cache=get_cache(sess, tensor_input_image , tensor_top_conv , img)
