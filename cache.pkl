@@ -11,8 +11,7 @@ p3
 tp4
 Rp5
 (I1
-(I32
-I64
+(I2048
 tp6
 cnumpy
 dtype

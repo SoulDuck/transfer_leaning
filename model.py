@@ -42,7 +42,7 @@ def gap(name,x , n_classes ):
 def algorithm(y_conv, y_, learning_rate):
     """
     :param y_conv: logits
-    :param y_: labels
+    :param y_: labels  type : one hot vector
     :param learning_rate: learning rate
     :return:  pred,pred_cls , cost , correct_pred ,accuracy
     """
@@ -57,4 +57,4 @@ def algorithm(y_conv, y_, learning_rate):
     correct_pred = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1), name='correct_pred')
     accuracy = tf.reduce_mean(tf.cast(correct_pred, dtype=tf.float32), name='accuracy')
 
-    return y_conv
+    return pred, pred_cls, cost, train_op, correct_pred, accuracy
