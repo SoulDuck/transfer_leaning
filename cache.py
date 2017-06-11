@@ -7,7 +7,6 @@ import PIL
 import glob
 from PIL import Image
 
-
 def show_progress(i,max_iter):
     msg='\r Progress {0}/{1}'.format(i,max_iter)
     sys.stdout.write(msg)
@@ -17,10 +16,13 @@ def make_numpy_images(folder_path , extension):
     paths=glob.glob(folder_path + extension)
     n=len(paths)
     tmp=[]
-    for path in paths:
+    for i,path in enumerate(paths):
+        if i==0:
+            print np.shape(np.shape(img))
+        show_progress(i, paths)
         img=Image.open(path)
         img=np.asarray(img)
-        print np.shape(img)
+        #print np.shape(img)
         tmp.append(img)
     imgs=np.asarray(tmp)
 
@@ -95,16 +97,26 @@ def check_cache(cache):
     cache = save_and_restore_cache(cache, './cache.pkl')
     print np.shape(cache)
 
+def_graph_path = './pretrained_model/classify_image_graph_def.pb'
+sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, tensor_transfer_layer, tensor_top_conv = restore_graph(
+    def_graph_path)
+
+
 
 if __name__ =='__main__':
-    folder_path='./sample_image_resize/'
+
+    folder_path='/home/mediwhale/data/eye/resize_eye/abnormal/cataract/'
     extension='*.png'
+    images = make_numpy_images(folder_path, extension)
+    caches = get_caches(sess, tensor_input_image, tensor_transfer_layer, images)
+    np.save('/home/mediwhale/data/eye/cache/abnormal/cataract/cataract_caches.npy' , caches )
+
+    """
     images=make_numpy_images(folder_path,extension)
     img=Image.open('./sample_image/79101_20130730_L.png')
     img=np.asarray(img)
-    def_graph_path='./pretrained_model/classify_image_graph_def.pb'
-    sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, tensor_transfer_layer , tensor_top_conv=restore_graph(def_graph_path)
     cache=get_caches(sess, tensor_input_image , tensor_transfer_layer , img)
     caches=get_caches(sess, tensor_input_image , tensor_transfer_layer , images)
     print np.shape(caches)
     check_cache(cache)
+    """
