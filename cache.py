@@ -17,11 +17,11 @@ def make_numpy_images(folder_path , extension):
     n=len(paths)
     tmp=[]
     for i,path in enumerate(paths):
+        img=Image.open(path)
+        img=np.asarray(img)
         if i==0:
             print np.shape(np.shape(img))
         show_progress(i, paths)
-        img=Image.open(path)
-        img=np.asarray(img)
         #print np.shape(img)
         tmp.append(img)
     imgs=np.asarray(tmp)
