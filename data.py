@@ -1,5 +1,18 @@
 import numpy as np
 import random
+
+def cls2onehot(cls, depth):
+    labels=np.zeros([len(cls),2])
+    for i,ind in enumerate(cls):
+
+        labels[i][ind:ind+1]=1
+    if __debug__==True:
+        print 'show sample cls and converted labels'
+        print cls[:10]
+        print labels[:10]
+        print cls[-10:]
+        print labels[-10:]
+    return labels
 def get_cache_data_normal_vs_abnormal(normal_cache_data , abnormal_cache_data ,train_ratio=0.95):
 
 
@@ -27,7 +40,9 @@ def get_cache_data_normal_vs_abnormal(normal_cache_data , abnormal_cache_data ,t
     test_data=np.concatenate((test_normal_caches , test_abnormal_caches),axis=0)
 
     normal_labels = np.zeros([n_normal])
+    normal_labels=normal_labels.astype(np.int32)
     abnormal_labels = np.ones([n_abnormal])
+    abnormal_labels=abnormal_labels.astype(np.int32)
 
     train_normal_labels=normal_labels[:n_train_normal]
     test_normal_labels = normal_labels[n_train_normal:]
@@ -37,6 +52,8 @@ def get_cache_data_normal_vs_abnormal(normal_cache_data , abnormal_cache_data ,t
     test_labels = np.concatenate((test_normal_labels, test_abnormal_labels))
 
     if __debug__== True:
+        print 'NORMAL LABEL :0'
+        print 'ABNORMAL LABEL :1'
         print '########data##############'
         print '########noraml############'
         print 'the number of normal :' , n_normal
@@ -55,7 +72,7 @@ def get_cache_data_normal_vs_abnormal(normal_cache_data , abnormal_cache_data ,t
         print 'the total of test data:',n_test_normal + n_test_abnormal
         print 'the shape of training data shape:' ,train_data.shape
         print 'the shape of test data shape:' ,test_data.shape
-        print 'the shape of traininn labels shape:', train_labels.shape
+        print 'the shape of training labels shape:', train_labels.shape
         print 'the shape of test labels shape:', test_labels.shape
 
     return train_data ,train_labels , test_data, test_labels
