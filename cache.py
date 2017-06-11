@@ -21,7 +21,7 @@ def make_numpy_images(folder_path , extension):
         img=np.asarray(img)
         if i==0:
             print np.shape(np.shape(img))
-        show_progress(i, paths)
+        show_progress(i, len(paths))
         #print np.shape(img)
         tmp.append(img)
     imgs=np.asarray(tmp)
@@ -105,12 +105,13 @@ sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, ten
 
 if __name__ =='__main__':
 
-    folder_path='/home/mediwhale/data/eye/resize_eye/abnormal/cataract/'
+    folder_path='/home/mediwhale/data/eye/resize_eye/normal/'
     extension='*.png'
     images = make_numpy_images(folder_path, extension)
     caches = get_caches(sess, tensor_input_image, tensor_transfer_layer, images)
-    np.save('/home/mediwhale/data/eye/cache/abnormal/cataract/cataract_caches.npy' , caches )
-
+    np.save('/home/mediwhale/data/eye/cache/normal/normal_caches.npy' , caches )
+    caches=np.load('/home/mediwhale/data/eye/cache/normal/normal_caches.npy')
+    print np.shape(caches)
     """
     images=make_numpy_images(folder_path,extension)
     img=Image.open('./sample_image/79101_20130730_L.png')
