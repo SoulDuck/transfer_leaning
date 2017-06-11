@@ -7,6 +7,7 @@ from model import convolution2d ,affine , gap , algorithm
 
 
 if __name__=='__main__':
+
     x_=tf.placeholder(dtype=tf.float32 ,shape=[None , 2048])
     y_=tf.placeholder(dtype=tf.float32 , shape=[None  ,2 ])
     n_classes=2

@@ -12,12 +12,14 @@ def show_progress(i,max_iter):
     sys.stdout.write(msg)
     sys.stdout.flush()
 
-def make_numpy_images(folder_path , extension):
-    paths=glob.glob(folder_path + extension)
-    n=len(paths)
+def make_numpy_images(paths):
+
     tmp=[]
     for i,path in enumerate(paths):
-        img=Image.open(path)
+        try:
+            img=Image.open(path)
+        except IOError as ioe:
+            continue
         img=np.asarray(img)
         if i==0:
             print np.shape(np.shape(img))
@@ -104,14 +106,29 @@ sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, ten
 
 
 if __name__ =='__main__':
+    folder_path = '/home/mediwhale/data/eye/resize_eye/normal/';extension = '*.png'
+    target_paths = glob.glob(folder_path + extension)
 
-    folder_path='/home/mediwhale/data/eye/resize_eye/normal/'
-    extension='*.png'
-    images = make_numpy_images(folder_path, extension)
+
+    images = make_numpy_images(target_paths[:10000] )
     caches = get_caches(sess, tensor_input_image, tensor_transfer_layer, images)
-    np.save('/home/mediwhale/data/eye/cache/normal/normal_caches.npy' , caches )
-    caches=np.load('/home/mediwhale/data/eye/cache/normal/normal_caches.npy')
+    np.save('/home/mediwhale/data/eye/cache/normal/normal_caches_1.npy' , caches )
+    caches=np.load('/home/mediwhale/data/eye/cache/normal/normal_caches_1.npy')
     print np.shape(caches)
+
+    images = make_numpy_images(target_paths[10000:20000])
+    caches = get_caches(sess, tensor_input_image, tensor_transfer_layer, images)
+    np.save('/home/mediwhale/data/eye/cache/normal/normal_caches_2.npy', caches)
+    caches = np.load('/home/mediwhale/data/eye/cache/normal/normal_caches_2.npy')
+    print np.shape(caches)
+
+
+    images = make_numpy_images(target_paths[20000:])
+    caches = get_caches(sess, tensor_input_image, tensor_transfer_layer, images)
+    np.save('/home/mediwhale/data/eye/cache/normal/normal_caches_3.npy', caches)
+    caches = np.load('/home/mediwhale/data/eye/cache/normal/normal_caches_3.npy')
+    print np.shape(caches)
+
     """
     images=make_numpy_images(folder_path,extension)
     img=Image.open('./sample_image/79101_20130730_L.png')
