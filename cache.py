@@ -1,15 +1,48 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+import os,sys
 import pickle
 import PIL
+import glob
 from PIL import Image
-def get_cache(sess, tensor_input_image ,  tensor_transfer_layer,image):
-    feed_dict = {tensor_input_image: image}
-    cache=sess.run(tensor_transfer_layer , feed_dict=feed_dict )
-    cache=np.squeeze(cache)
-    return cache
+
+
+def show_progress(i,max_iter):
+    msg='\r Progress {0}/{1}'.format(i,max_iter)
+    sys.stdout.write(msg)
+    sys.stdout.flush()
+
+def make_numpy_images(folder_path , extension):
+    paths=glob.glob(folder_path + extension)
+    n=len(paths)
+    tmp=[]
+    for path in paths:
+        img=Image.open(path)
+        img=np.asarray(img)
+        print np.shape(img)
+        tmp.append(img)
+    imgs=np.asarray(tmp)
+
+    if __debug__==True:
+        print 'images shape :',np.shape(imgs)
+    return imgs
+
+def get_caches(sess, tensor_input_image ,  tensor_transfer_layer,images):
+
+    if len(np.shape(images)) ==3:
+        h,w,ch=np.shape(images)
+        images=images.reshape([1,h,w,ch])
+        print np.shape(images)
+    tmp=[]
+    for i,image in enumerate(images):
+        show_progress(i,len(images))
+        feed_dict = {tensor_input_image: image}
+        cache=sess.run(tensor_transfer_layer , feed_dict=feed_dict )
+        cache=np.squeeze(cache)
+        tmp.append(cache)
+    caches=np.asarray(tmp)
+    return caches
 
 def save_and_restore_cache(cache , save_path):
     name = save_path.split('/')[-1]
@@ -49,20 +82,29 @@ def restore_graph( graph_def_path):
     print 'graph restore succeed!'
     return sess, tensor_input_image,tensor_softmax , tensor_cost , tensor_resized_imgae , tensor_transfer_layer , tensor_top_conv
 
-if __name__ =='__main__':
-
-    img=Image.open('./sample_image/79101_20130730_L.png')
-    def_graph_path='/Users/seongjungkim/PycharmProjects/transfer_leaning_git/Pretrained_Model/classify_image_graph_def.pb'
-    sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, tensor_transfer_layer , tensor_top_conv=restore_graph(def_graph_path)
-    cache=get_cache(sess, tensor_input_image , tensor_transfer_layer , img)
-    reshape_cache=cache.reshape([32,64])
+def check_cache(cache):
+    reshape_cache = cache.reshape([32, 64])
     plt.imshow(img)
     plt.show()
     plt.imshow(reshape_cache)
     plt.show()
-    conv_cache=get_cache(sess, tensor_input_image , tensor_top_conv , img)
-    plt.imshow(conv_cache[:,:,0])
+    conv_cache = get_caches(sess, tensor_input_image, tensor_top_conv, img)
+    plt.imshow(conv_cache[:, :, 0])
     plt.show()
     print np.shape(cache)
-    cache=save_and_restore_cache(cache,'./cache.pkl')
+    cache = save_and_restore_cache(cache, './cache.pkl')
     print np.shape(cache)
+
+
+if __name__ =='__main__':
+    folder_path='./sample_image_resize/'
+    extension='*.png'
+    images=make_numpy_images(folder_path,extension)
+    img=Image.open('./sample_image/79101_20130730_L.png')
+    img=np.asarray(img)
+    def_graph_path='./pretrained_model/classify_image_graph_def.pb'
+    sess, tensor_input_image, tensor_softmax, tensor_cost, tensor_resized_imgae, tensor_transfer_layer , tensor_top_conv=restore_graph(def_graph_path)
+    cache=get_caches(sess, tensor_input_image , tensor_transfer_layer , img)
+    caches=get_caches(sess, tensor_input_image , tensor_transfer_layer , images)
+    print np.shape(caches)
+    check_cache(cache)
